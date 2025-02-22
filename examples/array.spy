@@ -33,26 +33,33 @@ def ndarray1(DTYPE):
         def __CALL_METHOD__(v_self: OpArg, v_meth: OpArg,
                             v_arg: OpArg) -> OpImpl:
 
-            def append(arr: ndarray, value: DTYPE) -> void:
-                ll = arr.__ll__
-                if ll.length >= ll.capacity:
-                    # resize needed - double the capacity
-                    new_capacity = ll.capacity * 2
-                    if new_capacity == 0:
-                        new_capacity = 1
-                    new_items = gc_alloc(DTYPE)(new_capacity)
-                    # copy existing items
-                    i = 0
-                    while i < ll.length:
-                        new_items[i] = ll.items[i]
-                        i = i + 1
-                    ll.items = new_items
-                    ll.capacity = new_capacity
+            if v_meth.blueval == 'append':
 
-                ll.items[ll.length] = value
-                ll.length = ll.length + 1
+                def append(arr: ndarray, value: DTYPE) -> void:
+                    ll = arr.__ll__
+                    if ll.length >= ll.capacity:
+                        # resize needed - double the capacity
+                        new_capacity = ll.capacity * 2
+                        if new_capacity == 0:
+                            new_capacity = 1
+                        new_items = gc_alloc(DTYPE)(new_capacity)
+                        # copy existing items
+                        i = 0
+                        while i < ll.length:
+                            new_items[i] = ll.items[i]
+                            i = i + 1
+                        ll.items = new_items
+                        ll.capacity = new_capacity
 
-            return OpImpl(append, [v_self, v_arg])
+                    ll.items[ll.length] = value
+                    ll.length = ll.length + 1
+
+                return OpImpl(append, [v_self, v_arg])
+
+            else:
+                # XXX, it should be OpImpl.NULL but we don't have it at
+                # applevel
+                return None
 
 
         @blue
@@ -65,7 +72,7 @@ def ndarray1(DTYPE):
                     # raise...
                 return ll.items[i]
 
-            return OpImpl(getitem)
+            return OpImpl(getitem, None)
 
 
         @blue
@@ -78,7 +85,7 @@ def ndarray1(DTYPE):
                     # raise...
                 ll.items[i] = v
 
-            return OpImpl(setitem)
+            return OpImpl(setitem, None)
 
     return ndarray
 
