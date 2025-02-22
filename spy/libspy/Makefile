@@ -76,7 +76,6 @@ else ifeq ($(TARGET), emscripten)
 		-mmultivalue \
 		-Xclang -target-abi \
 		-Xclang experimental-mv \
-		-mbulk-memory \
 		-fPIC # XXX
 
 	SRCS := \

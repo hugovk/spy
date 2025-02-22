@@ -13,7 +13,7 @@ int32_t spy_mymod$add(int32_t x, int32_t y);
 """
 
 SPY_ROOT = '/home/antocuni/anaconda/spy'
-if 'pyodide' in os.environ:
+if 'PYODIDE_ABI_VERSION' in os.environ:
     # building for pyodide
     TARGET = 'emscripten'
 else:
