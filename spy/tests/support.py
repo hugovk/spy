@@ -300,15 +300,20 @@ class CTest:
         self.toolchain = ZigToolchain('debug')
         self.builddir = self.tmpdir.join('build').ensure(dir=True)
 
-    def write(self, src: str) -> py.path.local:
+    def write_file(self, filename: str, src: str) -> py.path.local:
+        """
+        Write the give source code to the specified filename, in the tmpdir.
+
+        The source code is automatically dedented.
+        """
         src = textwrap.dedent(src)
-        test_c = self.tmpdir.join('test.c')
-        test_c.write(src)
-        return test_c
+        srcfile = self.tmpdir.join(filename)
+        srcfile.write(src)
+        return srcfile
 
     def compile(self, src: str, *,
                 exports: Optional[list[str]] = None) -> py.path.local:
-        test_c = self.write(src)
+        test_c = self.write_file('test.c', src)
         test_wasm = self.builddir.join('test.wasm')
         self.toolchain.c2wasm(
             test_c,
@@ -320,7 +325,7 @@ class CTest:
         return test_wasm
 
     def compile_exe(self, src: str) -> py.path.local:
-        test_c = self.write(src)
+        test_c = self.write_file('test.c', src)
         ext = self.toolchain.EXE_FILENAME_EXT
         test_exe = self.builddir.join(f'test.{ext}')
         self.toolchain.c2exe(

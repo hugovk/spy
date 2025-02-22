@@ -224,7 +224,7 @@ class EmscriptenToolchain(Toolchain):
     def LDFLAGS(self) -> list[str]:
         post_js = spy.libspy.SRC.join('emscripten_post.js')
         return super().LDFLAGS + [
-            "-sEXPORTED_FUNCTIONS=['_main']",
+            #"-sEXPORTED_FUNCTIONS=['_main']", # XXX
             "-sWASM_BIGINT",
             f"--extern-post-js={post_js}",
         ]
@@ -232,7 +232,13 @@ class EmscriptenToolchain(Toolchain):
     def c2exe(self, file_c: py.path.local, file_exe: py.path.local, *,
               opt_level: int,
               debug_symbols: bool,
+              shared: bool = False,
               ) -> py.path.local:
+        if shared:
+            # XXX hack hack hack
+            return self.c2so(file_c, file_exe,
+                             opt_level=opt_level,
+                             debug_symbols=debug_symbols)
 
         return self.cc(
             file_c,
@@ -240,4 +246,18 @@ class EmscriptenToolchain(Toolchain):
             opt_level=opt_level,
             debug_symbols=debug_symbols,
             EXTRA_CFLAGS=self.WASM_CFLAGS,
+        )
+
+    def c2so(self, file_c: py.path.local, file_exe: py.path.local, *,
+              opt_level: int,
+              debug_symbols: bool,
+              ) -> py.path.local:
+        extra_cflags = self.WASM_CFLAGS
+        extra_cflags += ['-shared', '-sSIDE_MODULE', '-fPIC']
+        return self.cc(
+            file_c,
+            file_exe,
+            opt_level=opt_level,
+            debug_symbols=debug_symbols,
+            EXTRA_CFLAGS=extra_cflags,
         )

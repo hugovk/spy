@@ -72,6 +72,10 @@ class Arguments:
         "-t", "--toolchain",
         help="which compiler to use"
     )
+    shared: bool = Option(False,
+        '--shared',
+        help="build a shared library instead of an executable"
+    )
     pretty: bool = Option(True,
         help="Prettify redshifted modules"
     )
@@ -193,4 +197,5 @@ def do_main(args: Arguments) -> None:
             debug_symbols=args.debug_symbols,
             toolchain_type=args.toolchain,
             release_mode=args.release_mode,
+            shared=args.shared,
         )

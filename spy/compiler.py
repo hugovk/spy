@@ -59,6 +59,7 @@ class Compiler:
                debug_symbols: bool,
                release_mode: bool,
                toolchain_type: ToolchainType,
+               shared: bool = False,
                ) -> py.path.local:
         """
         Build the .c file into a .wasm file or an executable
@@ -87,6 +88,16 @@ class Compiler:
                 print(f'---- {self.file_wasm} ----')
                 os.system(f'wasm2wat {file_wasm}')
             return file_wasm
+
+        elif toolchain.TARGET == 'emscripten' and shared:
+            # XXX ad-hoc logic
+            file_exe = self.file_wasm.new(ext='.wasm.so')
+            toolchain.c2exe(file_c, file_exe,
+                            opt_level=opt_level,
+                            debug_symbols=debug_symbols,
+                            shared=shared)
+            return file_exe
+
         else:
             file_exe = self.file_wasm.new(ext=toolchain.EXE_FILENAME_EXT)
             toolchain.c2exe(file_c, file_exe,

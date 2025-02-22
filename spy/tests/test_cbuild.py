@@ -40,3 +40,23 @@ class TestToolchain(CTest):
             status, out = getstatusoutput(f"node {test_exe}")
         assert status == 0
         assert out == 'hello world\nhello debug'
+
+    ## @pytest.mark.parametrize("toolchain", [
+    ##     pytest.param("native"),
+    ##     pytest.param("emscripten", marks=pytest.mark.emscripten)
+    ## ])
+    ## def test_c2shared(self, toolchain):
+    ##     self.toolchain = get_toolchain(toolchain, build_type="debug")
+    ##     src = r"""
+    ##     #include "spy.h"
+    ##     int32_t fn(int32_t x) {
+    ##         return spy_builtins$abs(x) + 1;
+    ##     }
+    ##     """
+    ##     test_exe = self.compile_exe(src)
+    ##     if toolchain == 'native':
+    ##         status, out = getstatusoutput(str(test_exe))
+    ##     elif toolchain == 'emscripten':
+    ##         status, out = getstatusoutput(f"node {test_exe}")
+    ##     assert status == 0
+    ##     assert out == 'hello world\nhello debug'
