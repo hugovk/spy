@@ -1,0 +1,1 @@
+spy --cwrite mymod.spy
